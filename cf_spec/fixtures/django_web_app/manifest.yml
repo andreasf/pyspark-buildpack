@@ -1,0 +1,3 @@
+applications:
+- name: django_web_app
+  disk_quota: 1gb

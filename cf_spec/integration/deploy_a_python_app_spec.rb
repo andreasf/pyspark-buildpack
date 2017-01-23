@@ -49,13 +49,11 @@ describe 'CF Python Buildpack' do
           let(:app_name) { 'flask_web_app' }
 
           specify do
-            expect(app).to be_running(60)
+            expect(app).to be_running(120)
 
             browser.visit_path('/')
             expect(browser).to have_body('Hello, World!')
             expect(app).to have_logged(/Downloaded \[file:\/\/.*\]/)
-
-            expect(app).not_to have_internet_traffic
 
           end
         end
@@ -65,12 +63,11 @@ describe 'CF Python Buildpack' do
         let(:app_name) { 'flask_web_app_python_3' }
 
         specify do
-          expect(app).to be_running(120)
+          expect(app).to be_running(180)
 
           browser.visit_path('/')
           expect(browser).to have_body('Hello, World!')
 
-          expect(app).not_to have_internet_traffic
         end
       end
     end
@@ -101,7 +98,7 @@ describe 'CF Python Buildpack' do
           end
 
           specify do
-            expect(app).to be_running(60)
+            expect(app).to be_running(120)
 
             browser.visit_path('/')
             expect(browser).to have_body('Hello, World!')
@@ -113,7 +110,7 @@ describe 'CF Python Buildpack' do
           let(:app_name) { 'django_web_app' }
 
           specify do
-            expect(app).to be_running(60)
+            expect(app).to be_running(120)
 
             browser.visit_path('/')
             expect(browser).to have_body('It worked!')
@@ -130,7 +127,7 @@ describe 'CF Python Buildpack' do
           let(:app_name) { 'flask_web_app_python_3' }
 
           specify do
-            expect(app).to be_running(60)
+            expect(app).to be_running(120)
 
             browser.visit_path('/')
             expect(browser).to have_body('Hello, World!')
@@ -141,7 +138,7 @@ describe 'CF Python Buildpack' do
           let(:app_name) { 'django_web_app_python_3' }
 
           specify do
-            expect(app).to be_running(60)
+            expect(app).to be_running(120)
 
             browser.visit_path('/')
             expect(browser).to have_body('It worked!')
@@ -158,7 +155,7 @@ describe 'CF Python Buildpack' do
       let(:app_name) { 'flask_web_app_not_vendored' }
 
       specify do
-        expect(app).to be_running(60)
+        expect(app).to be_running(120)
 
         browser.visit_path('/')
         expect(browser).to have_body('Hello, World!')
@@ -173,7 +170,7 @@ describe 'CF Python Buildpack' do
       let(:app_name) { 'miniconda_simple_app_python_2' }
 
       specify do
-        expect(app).to be_running(120)
+        expect(app).to be_running(180)
 
         browser.visit_path('/')
         expect(browser).to have_body('numpy: 1.10.4')
@@ -195,7 +192,7 @@ describe 'CF Python Buildpack' do
 
       describe 'keeping track of environment.yml' do
         specify do
-          expect(app).to be_running(120)
+          expect(app).to be_running(180)
 
           # Check that scipy was installed in the logs
           expect(app).to have_logged("scipy")
@@ -209,9 +206,9 @@ describe 'CF Python Buildpack' do
         end
 
         it "doesn't re-download unchanged dependencies" do
-          expect(app).to be_running(120)
+          expect(app).to be_running(180)
           Machete.push(app)
-          expect(app).to be_running(120)
+          expect(app).to be_running(180)
 
           # Check that scipy was not re-installed in the logs
           expect(app).to_not have_logged("scipy")
@@ -231,7 +228,7 @@ describe 'CF Python Buildpack' do
                         HERE
           create_environment_yml app_name, contents
           Machete.push(app)
-          expect(app).to be_running(120)
+          expect(app).to be_running(180)
 
           browser.visit_path('/')
           expect(browser).to have_body('numpy: 1.11.0')
@@ -247,7 +244,7 @@ describe 'CF Python Buildpack' do
       let(:app_name) { 'miniconda_simple_app_python_2_3' }
 
       specify do
-        expect(app).to be_running(120)
+        expect(app).to be_running(180)
 
         browser.visit_path('/')
         expect(browser).to have_body('python-version3')

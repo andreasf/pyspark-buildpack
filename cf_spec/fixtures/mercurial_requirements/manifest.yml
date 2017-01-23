@@ -1,0 +1,3 @@
+applications:
+- name: mercurial_requirements
+  disk_quota: 1gb

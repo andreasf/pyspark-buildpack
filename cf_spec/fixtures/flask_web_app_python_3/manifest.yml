@@ -1,0 +1,3 @@
+applications:
+- name: flask_web_app_python_3
+  disk_quota: 1gb

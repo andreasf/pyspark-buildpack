@@ -1,0 +1,3 @@
+applications:
+- name: flask_web_app_not_vendored
+  disk_quota: 1gb

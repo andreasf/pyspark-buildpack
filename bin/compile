@@ -24,6 +24,11 @@ ENV_DIR=$3
 
 $ROOT_DIR/compile-extensions/bin/check_buildpack_version $ROOT_DIR $CACHE_DIR
 
+$ROOT_DIR/compile-extensions/bin/check_stack_support
+
+# Install Spark.
+source $BIN_DIR/steps/spark
+
 # Use miniconda if environment.yml exists and exit
 if [ -f $BUILD_DIR/environment.yml ]; then
   echo "----------------- USING CONDA BUILDPACK -----------------"
@@ -31,8 +36,6 @@ if [ -f $BUILD_DIR/environment.yml ]; then
   $ROOT_DIR/compile-extensions/bin/store_buildpack_metadata $ROOT_DIR $CACHE_DIR
   exit 0
 fi
-
-$ROOT_DIR/compile-extensions/bin/check_stack_support
 
 # The ROOT_DIR is read only so we can't install dependencies in it
 # Move the ROOT_DIR contents to tmp and point ROOT_DIR to the new root
@@ -226,7 +229,7 @@ deep-cp /app/.heroku/src $BUILD_DIR/.heroku/src
 sub-env $BIN_DIR/steps/collectstatic
 
 # Create .profile script for application runtime environment variables.
-set-env PATH '$HOME/.heroku/python/bin:$PATH'
+set-env PATH '$HOME/.heroku/python/bin:$HOME/.spark/bin:$HOME/.java/bin:$PATH'
 set-env PYTHONUNBUFFERED true
 set-env PYTHONHOME /app/.heroku/python
 set-env LIBRARY_PATH '/app/.heroku/vendor/lib:/app/.heroku/python/lib:$LIBRARY_PATH'

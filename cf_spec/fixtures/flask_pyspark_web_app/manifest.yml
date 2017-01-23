@@ -1,0 +1,7 @@
+---
+applications:
+- name: flask_pyspark_web_app
+  disk_quota: 1GB
+  memory: 1GB
+  command: spark-submit spark-app.py
+

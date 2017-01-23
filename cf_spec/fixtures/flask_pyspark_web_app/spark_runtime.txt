@@ -1,0 +1,9 @@
+JDK_URL=https://java-buildpack.cloudfoundry.org/openjdk/trusty/x86_64/openjdk-1.8.0_91.tar.gz
+JDK_FILENAME=openjdk-1.8.0_91.tar.gz
+JDK_SHA256=6bc971e0501501bddf61e9095a752a7f00dc27928e3590ff880cc63df081fed3
+
+SPARK_URL=http://d3kbcqa49mib13.cloudfront.net/spark-2.1.0-bin-hadoop2.7.tgz
+SPARK_FILENAME=spark-2.1.0-bin-hadoop2.7.tgz
+SPARK_SHA256=0834c775f38473f67cb122e0ec21074f800ced50c1ff1b9e37e222a0069dc5c7
+
+CACHE_DISABLED=false

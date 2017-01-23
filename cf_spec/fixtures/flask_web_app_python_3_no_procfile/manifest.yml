@@ -1,4 +1,5 @@
 ---
 applications:
   - name: flask_web_app_python_3_no_procfile
+    disk_quota: 1gb
     command: gunicorn server:app

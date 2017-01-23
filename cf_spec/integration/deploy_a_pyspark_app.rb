@@ -1,8 +1,8 @@
 require 'spec_helper'
 
-describe 'deploying a flask web app' do
+describe 'deploying a PySpark web app' do
   let(:browser)  { Machete::Browser.new(app) }
-   let(:app_name) { 'flask_web_app_python_3_no_procfile' }
+   let(:app_name) { 'flask_pyspark_web_app' }
 
   subject(:app)  { Machete.deploy_app(app_name) }
 
@@ -10,10 +10,10 @@ describe 'deploying a flask web app' do
 
   context 'start command is specified in manifest.yml' do
     specify do
-      expect(app).to be_running(120)
+      expect(app).to be_running(180)
 
       browser.visit_path('/')
-      expect(browser).to have_body('I was started without a Procfile')
+      expect(browser).to have_body("['i', 'am', 'a', 'string', 'that', 'was', 'sent', 'to', 'spark', 'and', 'back']")
     end
   end
 end

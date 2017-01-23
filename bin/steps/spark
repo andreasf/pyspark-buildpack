@@ -1,0 +1,110 @@
+SPARK_PROFILE_PATH="$BUILD_DIR/.profile.d/spark.sh"
+SPARK_CONFIG_FILE="$BUILD_DIR/spark_runtime.txt"
+
+JDK_URL=https://java-buildpack.cloudfoundry.org/openjdk/trusty/x86_64/openjdk-1.8.0_91.tar.gz
+JDK_FILENAME=openjdk-1.8.0_91.tar.gz
+JDK_SHA256=6bc971e0501501bddf61e9095a752a7f00dc27928e3590ff880cc63df081fed3
+JAVA_HOME=$BUILD_DIR/.java
+
+SPARK_URL=http://d3kbcqa49mib13.cloudfront.net/spark-2.1.0-bin-hadoop2.7.tgz
+SPARK_FILENAME=spark-2.1.0-bin-hadoop2.7.tgz
+SPARK_SHA256=0834c775f38473f67cb122e0ec21074f800ced50c1ff1b9e37e222a0069dc5c7
+SPARK_HOME=$BUILD_DIR/.spark
+
+spark_main() {
+    mkdir -p $(dirname $SPARK_PROFILE_PATH)
+    mkdir -p $CACHE_DIR
+
+    spark_install_openjdk
+    set-spark-env JAVA_HOME '/app/.java'
+
+    spark_install_spark
+    set-spark-env SPARK_HOME '/app/.spark'
+    set-spark-env PATH '/app/.spark/bin:/app/.java/bin:$PATH'
+}
+
+spark_install_openjdk() {
+    mkdir -p $JAVA_HOME
+
+    filename=$(get_setting JDK_FILENAME)
+    url=$(get_setting JDK_URL)
+    sha=$(get_setting JDK_SHA256)
+
+    if ! is_cache_disabled || [ ! -e "${CACHE_DIR}/${filename}" ] || ! spark_check_hash "${CACHE_DIR}/${filename}" ${sha}
+    then
+        echo "Downloading OpenJDK from ${url}..."
+        curl $url > $JAVA_HOME/$filename
+        spark_check_hash "${JAVA_HOME}/${filename}" ${sha}
+        if ! is_cache_disabled
+        then
+            cp "${JAVA_HOME}/${filename}" "${CACHE_DIR}/${filename}"
+        else
+            echo "Cache disabled, not caching OpenJDK"
+        fi
+    else
+        echo "Using OpenJDK from cache..."
+        cp "${CACHE_DIR}/${filename}" $JAVA_HOME/$filename
+    fi
+
+    tar --directory $JAVA_HOME -xzf $JAVA_HOME/$filename
+    rm "${JAVA_HOME}/${filename}"
+}
+
+get_setting() {
+    key=$1
+
+    if [ -e "$SPARK_CONFIG_FILE" ]
+    then
+        value=$(grep -ie "^$key" $SPARK_CONFIG_FILE | tail -n1 | cut -f 2 -d= | grep -oE "\S+")
+        if [ "$value" != "" ]
+        then
+            echo $value
+            return 0
+        fi
+    fi
+
+    echo $(eval "echo \$$key")
+}
+
+spark_check_hash() {
+    path=$1
+    sha256=$2
+    echo "${sha256}  ${path}" | sha256sum --check -
+}
+
+is_cache_disabled() {
+    [ "$(get_setting CACHE_DISABLED)" == "true" ]
+}
+
+set-spark-env() {
+  echo "export $1=$2" >> $SPARK_PROFILE_PATH
+}
+
+spark_install_spark() {
+    mkdir -p $SPARK_HOME
+
+    filename=$(get_setting SPARK_FILENAME)
+    url=$(get_setting SPARK_URL)
+    sha=$(get_setting SPARK_SHA256)
+
+    if ! is_cache_disabled || [ ! -e "${CACHE_DIR}/${filename}" ] || ! spark_check_hash "${CACHE_DIR}/${filename}" ${sha}
+    then
+        echo "Downloading Spark from ${url}..."
+        curl $url > $SPARK_HOME/$filename
+        spark_check_hash "${SPARK_HOME}/${filename}" ${sha}
+        if ! is_cache_disabled
+        then
+            cp "${SPARK_HOME}/${filename}" "${CACHE_DIR}/${filename}"
+        else
+            echo "Cache disabled, not caching Spark"
+        fi
+    else
+        echo "Using Spark from cache..."
+        cp "${CACHE_DIR}/${filename}" $SPARK_HOME/$filename
+    fi
+
+    tar --directory $SPARK_HOME --strip-components 1 -xzf $SPARK_HOME/$filename
+    rm "${SPARK_HOME}/${filename}"
+}
+
+spark_main $*
