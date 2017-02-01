@@ -1,5 +1,5 @@
 ---
-language: python
+language: pyspark
 default_versions:
   - name: python
     version: 2.7.13
