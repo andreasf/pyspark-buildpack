@@ -8,7 +8,7 @@ describe 'deploying a PySpark web app' do
 
   after { Machete::CF::DeleteApp.new.execute(app) }
 
-  context 'start command is specified in manifest.yml' do
+  context 'start command is specified in manifest.yml', :cached do
     specify do
       expect(app).to be_running(180)
 
